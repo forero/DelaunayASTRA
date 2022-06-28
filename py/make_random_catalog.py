@@ -1,4 +1,3 @@
-import parser
 import argparse
 import numpy as np
 
