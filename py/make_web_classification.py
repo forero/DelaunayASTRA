@@ -3,12 +3,13 @@ import numpy as np
 import scipy.spatial as spatial
 import itertools
 
-def web_classification(r_values, n_points):
+def web_classification(n_data, n_random, n_points):
+    r_values = (n_data-n_random)/(n_data+n_random)
     web_class = np.zeros(n_points, dtype=np.int)
     is_void = r_values <= -0.50
     is_sheet = (r_values > -0.50) & (r_values<=0.0)
     is_filament = (r_values>0.0) & (r_values<=0.50)
-    is_peak = (r_values>0.75)
+    is_peak = (r_values>0.50)
     web_class[is_void] = 0
     web_class[is_sheet] = 1
     web_class[is_filament] = 2
@@ -21,9 +22,17 @@ def make_classification(datafile, randomfile, outputdatafile, outputrandomfile):
     intermediate_datafile = datafile.replace(extension, '_n_connections'+extension)
     print(intermediate_datafile)
     
+    extension = datafile[-4:]
+    pairs_datafile = datafile.replace(extension, '_pairs'+extension)
+    print(pairs_datafile)
+    
     extension = randomfile[-4:]
     intermediate_randomfile = randomfile.replace(extension, '_n_connections'+extension)
     print(intermediate_randomfile)
+    
+    extension = datafile[-4:]
+    pairs_randomfile = randomfile.replace(extension, '_pairs'+extension)
+    print(pairs_randomfile)
     
     data = np.loadtxt(datafile)
     data = data[:,0:3]
@@ -54,8 +63,10 @@ def make_classification(datafile, randomfile, outputdatafile, outputrandomfile):
         all_pairs.append(l)
         
     all_pairs = np.vstack(all_pairs)
+    print('all_pairs', np.shape(all_pairs))
+    all_pairs = np.sort(all_pairs, axis=0)
     unique_pairs = np.unique(all_pairs, axis=0)
-    print(np.shape(unique_pairs))
+    print('unique_pairs', np.shape(unique_pairs))
     
     n_to_random = np.zeros(n_d+n_r)
     n_to_data = np.zeros(n_d+n_r)
@@ -80,17 +91,26 @@ def make_classification(datafile, randomfile, outputdatafile, outputrandomfile):
         else:
             n_to_random[a] +=1
             
+    
     count_data = np.array([n_to_data[:n_d], n_to_random[:n_d]])
     count_random = np.array([n_to_data[n_d:], n_to_random[n_d:]])
 
     np.savetxt(intermediate_datafile, count_data.T, fmt="%d %d")
     np.savetxt(intermediate_randomfile, count_random.T,  fmt="%d %d")
 
-    r_data = ((n_to_data[:n_d])-n_to_random[:n_d])/((n_to_data[:n_d])+n_to_random[:n_d])
-    r_random = ((n_to_data[n_d:])-n_to_random[n_d:])/((n_to_data[n_d:])+n_to_random[n_d:])
-
-    web_class_data = web_classification(r_data, n_d)
-    web_class_random = web_classification(r_random, n_d)
+    is_pairs_data = (unique_pairs[:,0]<n_d) & (unique_pairs[:,1]<n_d)
+    is_pairs_random = (unique_pairs[:,0]>=n_d) & (unique_pairs[:,1]>=n_d)
+    pairs_data = unique_pairs[is_pairs_data,:]
+    pairs_random = unique_pairs[is_pairs_random,:]-n_d
+    #pairs_data = np.sort(pairs_data, axis=0)
+    #pairs_random = np.sort(pairs_random, axis=0)
+    
+    
+    np.savetxt(pairs_datafile, pairs_data, fmt="%d %d")
+    np.savetxt(pairs_randomfile, pairs_random,  fmt="%d %d")
+    
+    web_class_data = web_classification(n_to_data[:n_d], n_to_random[:n_d] , n_d)
+    web_class_random = web_classification(n_to_data[n_d:], n_to_random[n_d:], n_d)
     
     np.savetxt(outputdatafile, web_class_data, fmt="%d")
     np.savetxt(outputrandomfile, web_class_random,  fmt="%d")
