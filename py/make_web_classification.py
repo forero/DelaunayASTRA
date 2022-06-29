@@ -6,8 +6,9 @@ import itertools
 def web_classification(n_data, n_random, n_points):
     r_values = (n_data-n_random)/(n_data+n_random)
     web_class = np.zeros(n_points, dtype=np.int)
-    is_void = r_values <= -0.50
-    is_sheet = (r_values > -0.50) & (r_values<=0.0)
+    lower_limit = -0.50
+    is_void = r_values <= lower_limit
+    is_sheet = (r_values > lower_limit) & (r_values<=0.0)
     is_filament = (r_values>0.0) & (r_values<=0.50)
     is_peak = (r_values>0.50)
     web_class[is_void] = 0
