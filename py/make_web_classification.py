@@ -64,7 +64,6 @@ def make_classification(datafile, randomfile, outputdatafile, outputrandomfile):
         
     all_pairs = np.vstack(all_pairs)
     print('all_pairs', np.shape(all_pairs))
-    all_pairs = np.sort(all_pairs, axis=0)
     unique_pairs = np.unique(all_pairs, axis=0)
     print('unique_pairs', np.shape(unique_pairs))
     
@@ -102,8 +101,6 @@ def make_classification(datafile, randomfile, outputdatafile, outputrandomfile):
     is_pairs_random = (unique_pairs[:,0]>=n_d) & (unique_pairs[:,1]>=n_d)
     pairs_data = unique_pairs[is_pairs_data,:]
     pairs_random = unique_pairs[is_pairs_random,:]-n_d
-    #pairs_data = np.sort(pairs_data, axis=0)
-    #pairs_random = np.sort(pairs_random, axis=0)
     
     
     np.savetxt(pairs_datafile, pairs_data, fmt="%d %d")
