@@ -124,7 +124,7 @@ def main():
     
     args = parser.parse_args()
     
-    make_count(args.datafile, args.randomfile, args.outputdatafile, args.outputrandomfile)
+    make_count(args.datafile, args.randomfile)
     
 if __name__ == "__main__":
     main()

@@ -1,8 +1,26 @@
 import argparse
 import numpy as np
 import sys
-sys.setrecursionlimit(2000)
+sys.setrecursionlimit(20000)
 
+
+def web_classification(n_data, n_random):
+    assert len(n_data) == len(n_random)
+    n_points = len(n_data)
+    r_values = (n_data-n_random)/(n_data+n_random)
+    web_class = np.zeros(n_points, dtype=np.int)
+    lower_limit = -0.75
+    upper_limit = 0.75
+    is_void = r_values <= lower_limit
+    is_sheet = (r_values > lower_limit) & (r_values<=0.0)
+    is_filament = (r_values>0.0) & (r_values <= upper_limit)
+    is_peak = (r_values > upper_limit)
+    web_class[is_void] = 0
+    web_class[is_sheet] = 1
+    web_class[is_filament] = 2
+    web_class[is_peak] = 3
+    return web_class
+    
 
 def find_friends(first_id, all_ids, pair_ids, included_ids):
     group = []
@@ -21,7 +39,7 @@ def find_friends(first_id, all_ids, pair_ids, included_ids):
         friends = []
         friends += list(pair_ids[pair_ids[:,0]==first_id,1])
         friends += list(pair_ids[pair_ids[:,1]==first_id,0])
-        print('friends', friends)
+        #print('friends', friends)
         for friend in friends:
             group.append(friend)
             group.extend(find_friends(friend, all_ids, pair_ids, included_ids))
@@ -44,7 +62,7 @@ def find_fof_groups(pairs):
     included_ids = list(np.zeros(n_points, dtype=int))
 
     n_total = 0
-    for first_id in [all_ids[0]]:
+    for first_id in all_ids:
         fof_ids = find_friends(first_id, all_ids, pairs, included_ids)
         if len(fof_ids):
             print(first_id, len(fof_ids))
@@ -56,14 +74,22 @@ def find_fof_groups(pairs):
     assert n_total == n_points
     return groups
 
-def make_catalog(posfile, pairfile, webfile, catalogfile, webtype):
+def make_catalog(posfile, pairfile, countfile, catalogfile, webtype):
+    extension = pairfile[-4:]
+    webfile = pairfile.replace('_pairs'+extension, '_n_connections'+extension)
+    print(webfile)
+    
     web_types = {"void":0, "sheet":1, "filament":2, "peak":3}
     web_type_id = web_types[webtype]
 
     pos = np.loadtxt(posfile)
     pos = pos[:,0:3]
     pairs = np.loadtxt(pairfile)
-    web = np.loadtxt(webfile)
+    counts = np.loadtxt(countfile)
+    
+    web = web_classification(counts[:,0], counts[:,1])
+    
+    #web = np.loadtxt(webfile)
     
     n_points = len(pos)
     
@@ -89,7 +115,7 @@ def make_catalog(posfile, pairfile, webfile, catalogfile, webtype):
     print(pairs)
 
     fof_groups = find_fof_groups(pairs)
-    print(fof_groups)
+    #print(fof_groups)
     
 def main():
     parser = argparse.ArgumentParser()
@@ -104,7 +130,7 @@ def main():
     )
     
     parser.add_argument(
-        "--webfile", help="input web classification file", type=str, default=None, required=True,
+        "--countfile", help="input link count file", type=str, default=None, required=True,
     )
     
     parser.add_argument(
@@ -117,7 +143,7 @@ def main():
     
     args = parser.parse_args()
     
-    make_catalog(args.posfile, args.pairfile, args.webfile, args.catalogfile, args.webtype)
+    make_catalog(args.posfile, args.pairfile, args.countfile, args.catalogfile, args.webtype)
     
 if __name__ == "__main__":
     main()
