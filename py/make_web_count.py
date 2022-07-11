@@ -3,22 +3,9 @@ import numpy as np
 import scipy.spatial as spatial
 import itertools
 
-def web_classification(n_data, n_random, n_points):
-    r_values = (n_data-n_random)/(n_data+n_random)
-    web_class = np.zeros(n_points, dtype=np.int)
-    lower_limit = -0.50
-    is_void = r_values <= lower_limit
-    is_sheet = (r_values > lower_limit) & (r_values<=0.0)
-    is_filament = (r_values>0.0) & (r_values<=0.50)
-    is_peak = (r_values>0.50)
-    web_class[is_void] = 0
-    web_class[is_sheet] = 1
-    web_class[is_filament] = 2
-    web_class[is_peak] = 3
-    return web_class
-    
 
-def make_classification(datafile, randomfile, outputdatafile, outputrandomfile):
+
+def make_count(datafile, randomfile):
     extension = datafile[-4:]
     intermediate_datafile = datafile.replace(extension, '_n_connections'+extension)
     print(intermediate_datafile)
@@ -107,11 +94,11 @@ def make_classification(datafile, randomfile, outputdatafile, outputrandomfile):
     np.savetxt(pairs_datafile, pairs_data, fmt="%d %d")
     np.savetxt(pairs_randomfile, pairs_random,  fmt="%d %d")
     
-    web_class_data = web_classification(n_to_data[:n_d], n_to_random[:n_d] , n_d)
-    web_class_random = web_classification(n_to_data[n_d:], n_to_random[n_d:], n_d)
+    #web_class_data = web_classification(n_to_data[:n_d], n_to_random[:n_d] , n_d)
+    #web_class_random = web_classification(n_to_data[n_d:], n_to_random[n_d:], n_d)
     
-    np.savetxt(outputdatafile, web_class_data, fmt="%d")
-    np.savetxt(outputrandomfile, web_class_random,  fmt="%d")
+    #np.savetxt(outputdatafile, web_class_data, fmt="%d")
+    #np.savetxt(outputrandomfile, web_class_random,  fmt="%d")
     
 
 def main():
@@ -126,18 +113,18 @@ def main():
         "--randomfile", help="output random catalog", type=str, default=None, required=True,
     )
     
-    parser.add_argument(
-        "--outputdatafile", help="output classification file for the input data catalog", type=str, default=None, required=True,
-    )
+#    parser.add_argument(
+#        "--outputdatafile", help="output classification file for the input data catalog", type=str, default=None, required=True,
+#    )
     
-    parser.add_argument(
-        "--outputrandomfile", help="output classification file for the input random catalog", type=str, default=None, required=True,
-    )
+ #   parser.add_argument(
+ #       "--outputrandomfile", help="output classification file for the input random catalog", type=str, default=None, required=True,
+ #   )
   
     
     args = parser.parse_args()
     
-    make_classification(args.datafile, args.randomfile, args.outputdatafile, args.outputrandomfile)
+    make_count(args.datafile, args.randomfile, args.outputdatafile, args.outputrandomfile)
     
 if __name__ == "__main__":
     main()
