@@ -8,9 +8,9 @@ def web_classification(n_data, n_random):
     assert len(n_data) == len(n_random)
     n_points = len(n_data)
     r_values = (n_data-n_random)/(n_data+n_random)
-    web_class = np.zeros(n_points, dtype=np.int)
-    lower_limit = -0.75
-    upper_limit = 0.75
+    web_class = np.zeros(n_points, dtype=int)
+    lower_limit = -0.85
+    upper_limit = 0.85
     is_void = r_values <= lower_limit
     is_sheet = (r_values > lower_limit) & (r_values<=0.0)
     is_filament = (r_values>0.0) & (r_values <= upper_limit)
@@ -19,8 +19,7 @@ def web_classification(n_data, n_random):
     web_class[is_sheet] = 1
     web_class[is_filament] = 2
     web_class[is_peak] = 3
-    return web_class
-    
+    return web_class  
 
 def find_friends(first_id, all_ids, pair_ids, included_ids):
     group = []
@@ -48,8 +47,6 @@ def find_friends(first_id, all_ids, pair_ids, included_ids):
         group.sort()
         return group
     
-    
-    
 def find_fof_groups(pairs):
     pairs = np.int_(pairs)
     print(pairs)
@@ -65,7 +62,8 @@ def find_fof_groups(pairs):
     for first_id in all_ids:
         fof_ids = find_friends(first_id, all_ids, pairs, included_ids)
         if len(fof_ids):
-            print(first_id, len(fof_ids))
+            if len(fof_ids)>8:
+                print(first_id, len(fof_ids))
             n_total += len(fof_ids)
             groups[group_id] = fof_ids
             group_id += 1
