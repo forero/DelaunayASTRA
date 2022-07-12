@@ -1,0 +1,192 @@
+Large-scale structure subsample dr72bright34
+extracted from VAGC_REDUX=/global/data/vagc-dr7/vagc2
+ 
+pre-redshift sampling conditions: 
+** Structure LETTERSTR, 12 tags, length=120, data length=112:
+   LETTER          STRING    'bright'
+   MMIN            DOUBLE           10.000000
+   MMAX            DOUBLE           17.600000
+   MINSAMPLING     DOUBLE          0.50000000
+   PSFMODEL        DOUBLE          0.35000000
+   R50BRIGHT       DOUBLE           2.0000000
+   MAGBRIGHT       DOUBLE           15.000000
+   COLLISION_TYPE  STRING    'nearest'    FLUX_TYPE       STRING    'petro'
+   BAND            LONG                 2
+   MINSCORE        DOUBLE          0.50000000
+   IMSAFE          LONG                 0
+ 
+MMAX is the maximum apparent mag allowed for this sample; see the mregions
+file for the actual limits as a function of position.
+ 
+collision_type can be: 
+   none    - no collisions are corrected
+   nearest - nearest neighbor is used as redshift for collided galaxies
+   photoz  - nearest neighbor is used *if* the it is within 0.1 of photo-z
+              for collided gal
+ 
+post-redshift sampling conditions: 
+** Structure POSTSTR, 13 tags, length=64, data length=64:
+   POST            STRING    '34'    ABSMMIN         FLOAT          -23.0000
+   ABSMMAX         FLOAT          -17.0000
+   ZMIN            FLOAT        0.00100000
+   ZMAX            FLOAT          0.400000
+   BAND_SHIFT      FLOAT          0.100000
+   OMEGA0          FLOAT          0.250000
+   OMEGAL0         FLOAT          0.750000
+   Q0              FLOAT           2.00000
+   QZ0             FLOAT          0.100000
+   Q1              FLOAT          -1.00000
+   GMRMIN          FLOAT          -10.0000
+   GMRMAX          FLOAT           10.0000
+ 
+Mean density= 0.0494599 +/- 0.0000003 h^3 Mpc^{-3}
+ 
+Effective area= 2.2295729
+ 
+ 
+Galaxies in Sample:
+==================
+
+lss.$sample$letter$post.dat
+# <indx> <sector> <mregion> <ra> <dec> <cz> <fgotten> <selection fn>
+#
+# Lists properties of all galaxies in the sample in question.
+# If you want to know more about the galaxies in this sample, the 
+# best thing to do us to consult the master lists associated with 
+# sample7. "indx" indicates the position (zero-indexed) of each 
+# object in the master list.
+#
+# indx: position of object in master object list of sample12
+# sector: index of sector region this object belongs to
+# mregion: index of magnitude limit region this object belongs to
+#          (see mregion file for info on each mregion)
+# ra: right ascension (degrees)
+# dec: declination (degrees)
+# cz: redshift (km/s)
+# fgotten: fraction of objects gotten in this sector region
+# selection fn: phi(z) for this redshift
+  
+photoinfo.$sample$letter$post.dat
+# <indx> <M_u> <M_g> <M_r> <M_i> <M_z> <mu_{50}> <r50/r90>
+#
+# Some photometric information on each object. DO NOT, repeat DO NOT,
+# cut the sample on these properties unless the sample is volume-limited.
+# Also note that the absolute magnitudes here are not evolution
+# corrected EVER.
+#
+# M_b: Absolute magnitudes K-corrected to the effective bandpasses at z=0.10.
+# mu_{50}: The r-band half-light Petrosian surface brightness, (1+z)^4- and 
+#          K-corrected 
+# r50/r90: The inverse concentration parameter
+
+id.sample12safe10.dat
+# <indx> <run> <rerun> <camcol> <field> <id>
+#
+# Object IDs for each galaxy.
+
+Radial Selection Function:
+=========================
+
+czselfunc.all.$sample$letter$dat.dat
+# <cz> <phi(cz)> 
+#
+# Gives the "overall" selection function; ie. the fraction of 
+# galaxies in your absolute magnitude range that are within the 
+# flux limits at a given redshift. Uses the mean K-correction 
+# as a function of redshift for this sample 
+
+czselfunc.[mregion].$sample$letter$dat.dat
+# <cz> <phi(cz)>
+#
+# Same as czselfunc.all, but separately for each mregion with a
+# different flux limit. (See the mregion file for information about
+# each mregion). 
+
+vmax.$sample$letter$post.dat
+# <indx> <Vmax> <zmin> <zmax> 
+#
+# Gives the Vmax-type information about this galaxy and this sample.
+# Does not include the effects of evolution EVER.
+# 
+# indx: LSS indx
+# Vmax: effective Vmax (including sampling fraction contribution)
+# zmin: minimum redshift galaxy would fall into the sample, given the 
+#       flux limits in the mregion in which it was observed
+# zmax: maximum redshift galaxy would fall into the sample, given the 
+#       flux limits in the mregion in which it was observed
+
+vmax_evolve.$sample$letter$post.dat
+# <indx> <Vmax> <zmin> <zmax> 
+#
+# Gives the Vmax-type information about this galaxy and this sample.
+# Includes the effects of evolution using function:
+#   curr_zdep=q0*(1+q1*(z-qz0))
+#   M_r(z=zobs)= M_r - curr_zdep*(zobs-qz0)
+# where M_r is the absolute magnitude given in the photoinfo file and 
+# qevolve, qz0, absmagdep, and ref_absmagdep are as listed above. 
+# 
+# indx: LSS indx
+# Vmax: effective Vmax (including sampling fraction contribution)
+# zmin: minimum redshift galaxy would fall into the sample, given the 
+#       flux limits in the boundary in which it was observed
+# zmax: maximum redshift galaxy would fall into the sample, given the 
+#       flux limits in the boundary in which it was observed
+
+Definition of Survey Area:
+=========================
+
+sectors.$sample$letter$post.dat
+# <sector> <fgot> <ntargets> <ngot> 
+#
+# Sampling rates of each sector (defined as a region covered by a
+# unique set of plates). Remember that objects for which we assign 
+# redshifts based on a close neighbor (ie. collided galaxies) are 
+# counted as "gotten".
+#
+# sector: index number of sector region
+# fgot: fraction of galaxy targets classified (including coll. fixes)
+# ntargets: number of galaxy targets 
+# ngot: number of galaxy targets classified (including coll. fixes)
+
+mregion.$sample$letter$post.dat
+# <area> <mmin> <mmax>
+#
+# Description of conditions for each boundary region.
+#
+# area: effective area (having taken out the bright star mask and then 
+#       accounting for the completeness), in steradians
+# mmin: bright flux limit
+# mmax: faint flux limmit
+
+window.$sample$letter$post.ply
+# mangle-style polygon file describing the geometry of the sample
+# (not accounting for the mask). format and code for handling these 
+# files is described at 
+# http://casa.colorado.edu/~ajsh/mangle/
+
+windowinfo.$sample$letter$post.dat
+# <sector> <mregion>
+# 
+# Classification of each polygon in the aforementioned "window"
+# polygon file. Each window polygon is fully contained in a single
+# sector and mregion.
+#
+# sector: sector of which polygon is a part (see the "sectors" file)
+# mregion: mregion of which polygon is a part (see the "mregion" file)
+
+mask.$sample$letter$post.ply
+# mangle-style polygon file describing the mask of the sample.
+# format and code for handling these files is described at 
+# http://casa.colorado.edu/~ajsh/mangle/
+
+maskinfo.$sample$letter$post.dat
+# <sector> <mregion> <iregion>
+# 
+# Classification of each polygon in the aforementioned "mask"
+# polygon file. Each mask is fully contained in the area of some 
+# window polygon.
+#
+# sector: sector of which polygon excludes a part (see the "sectors" file)
+# mregion: mregion of which polygon excludes a part (see the "mregion" file)
+# iwindow: polygon in "window" polygon of which this mask polygon
+#          excludes a part
