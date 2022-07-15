@@ -1,6 +1,7 @@
 import argparse
 import numpy as np
 import sys
+import pandas as pd
 sys.setrecursionlimit(20000)
 
 
@@ -9,8 +10,8 @@ def web_classification(n_data, n_random):
     n_points = len(n_data)
     r_values = (n_data-n_random)/(n_data+n_random)
     web_class = np.zeros(n_points, dtype=int)
-    lower_limit = -0.85
-    upper_limit = 0.85
+    lower_limit = -0.90
+    upper_limit = 0.90
     is_void = r_values <= lower_limit
     is_sheet = (r_values > lower_limit) & (r_values<=0.0)
     is_filament = (r_values>0.0) & (r_values <= upper_limit)
@@ -62,8 +63,8 @@ def find_fof_groups(pairs):
     for first_id in all_ids:
         fof_ids = find_friends(first_id, all_ids, pairs, included_ids)
         if len(fof_ids):
-            if len(fof_ids)>8:
-                print(first_id, len(fof_ids))
+            #if len(fof_ids)>8:
+            #    print(first_id, len(fof_ids))
             n_total += len(fof_ids)
             groups[group_id] = fof_ids
             group_id += 1
@@ -71,6 +72,61 @@ def find_fof_groups(pairs):
     # sanity check
     assert n_total == n_points
     return groups
+
+def inertia_tensor(x, y, z):
+    r = np.sqrt(x**2 + y**2 + z**2)
+    I = np.ones((3,3))
+    
+    I[0,0] = np.sum(r**2 - x*x)
+    I[1,1] = np.sum(r**2 - y*y)
+    I[2,2] = np.sum(r**2 - z*z)
+    
+    I[0,1] = -np.sum(x*y)
+    I[1,0] = I[0,1]
+    
+    I[0,2] = -np.sum(x*z)
+    I[2,0] = I[0,2]
+    
+    I[1,2] = -np.sum(y*z)
+    I[2,1] = I[1,2]
+    
+    values, vectors = np.linalg.eig(I)
+    ii = np.argsort(-values)
+    print(values[ii])
+    return np.sqrt(values[ii]), vectors[:,ii]
+
+def compute_group_properties(groups, positions):
+    props = {}
+    props['N'] = []
+    props['MEAN_X'] = []; props['MEAN_Y'] = []; props['MEAN_Z'] = []
+    props['SIGMA_X'] = []; props['SIGMA_Y'] = []; props['SIGMA_Z'] = []
+    props['SIGMA_R'] = []
+    props['LAMBDA_1'] = []; props['LAMBDA_2'] = []; props['LAMBDA_3'] = []
+    props['EIGEN_1'] = []
+    
+    for i in groups.keys():
+        x = positions[groups[i],0]
+        y = positions[groups[i],1]
+        z = positions[groups[i],2]
+        r = np.sqrt(x**2 + y**2 + z**2)
+        
+        props['N'].append(len(groups[i]))
+        props['SIGMA_R'].append(np.std(r))
+        props['MEAN_X'].append(np.mean(x))
+        props['MEAN_Y'].append(np.mean(y))
+        props['MEAN_Z'].append(np.mean(z))
+        props['SIGMA_X'].append(np.std(x))
+        props['SIGMA_Y'].append(np.std(y))
+        props['SIGMA_Z'].append(np.std(z))        
+
+        values, vectors = inertia_tensor(x,y,z)
+        props['LAMBDA_1'].append(values[0])
+        props['LAMBDA_2'].append(values[1])
+        props['LAMBDA_3'].append(values[2])
+        
+        props['EIGEN_1'].append(vectors[:,0])
+
+    return props
 
 def make_catalog(posfile, pairfile, countfile, catalogfile, webtype):
     extension = pairfile[-4:]
@@ -113,6 +169,15 @@ def make_catalog(posfile, pairfile, countfile, catalogfile, webtype):
     print(pairs)
 
     fof_groups = find_fof_groups(pairs)
+    
+    n_fof_groups = len(fof_groups)
+    print('Found {} groups'.format(n_fof_groups))
+    
+    group_properties = compute_group_properties(fof_groups, pos)
+    
+    #print(group_properties)
+    group_df = pd.DataFrame.from_dict(group_properties)
+    group_df.to_csv(catalogfile, index=False)
     #print(fof_groups)
     
 def main():
