@@ -2,29 +2,26 @@ import argparse
 import numpy as np
 import scipy.spatial as spatial
 import itertools
+import os
 
 
-
-def make_count(datafile, randomfile):
+def make_count(datafile, randomfile, inputdir, outputdir):
     extension = datafile[-4:]
-    intermediate_datafile = datafile.replace(extension, '_n_connections'+extension)
+    intermediate_datafile = datafile[:-4] + '_' + randomfile[:-4] + '_nconnections' + extension
     print(intermediate_datafile)
     
-    extension = datafile[-4:]
-    pairs_datafile = datafile.replace(extension, '_pairs'+extension)
+    pairs_datafile = datafile[:-4] + '_' + randomfile[:-4] + '_pairs' + extension
     print(pairs_datafile)
     
-    extension = randomfile[-4:]
-    intermediate_randomfile = randomfile.replace(extension, '_n_connections'+extension)
+    intermediate_randomfile = randomfile[:-4] + '_' + datafile[:-4] + '_nconnections' + extension
     print(intermediate_randomfile)
     
-    extension = datafile[-4:]
-    pairs_randomfile = randomfile.replace(extension, '_pairs'+extension)
+    pairs_randomfile = randomfile[:-4] + '_' + datafile[:-4] + '_pairs' + extension
     print(pairs_randomfile)
     
-    data = np.loadtxt(datafile)
+    data = np.loadtxt(os.path.join(inputdir, datafile))
     data = data[:,0:3]
-    random = np.loadtxt(randomfile)
+    random = np.loadtxt(os.path.join(inputdir, randomfile))
     random = random[:,0:3]
     
     n_d = len(data)
@@ -82,8 +79,8 @@ def make_count(datafile, randomfile):
     count_data = np.array([n_to_data[:n_d], n_to_random[:n_d]])
     count_random = np.array([n_to_data[n_d:], n_to_random[n_d:]])
 
-    np.savetxt(intermediate_datafile, count_data.T, fmt="%d %d")
-    np.savetxt(intermediate_randomfile, count_random.T,  fmt="%d %d")
+    np.savetxt(os.path.join(outputdir, intermediate_datafile), count_data.T, fmt="%d %d")
+    np.savetxt(os.path.join(outputdir, intermediate_randomfile), count_random.T,  fmt="%d %d")
 
     is_pairs_data = (unique_pairs[:,0]<n_d) & (unique_pairs[:,1]<n_d)
     is_pairs_random = (unique_pairs[:,0]>=n_d) & (unique_pairs[:,1]>=n_d)
@@ -91,8 +88,8 @@ def make_count(datafile, randomfile):
     pairs_random = unique_pairs[is_pairs_random,:]-n_d
     
     
-    np.savetxt(pairs_datafile, pairs_data, fmt="%d %d")
-    np.savetxt(pairs_randomfile, pairs_random,  fmt="%d %d")
+    np.savetxt(os.path.join(outputdir, pairs_datafile), pairs_data, fmt="%d %d")
+    np.savetxt(os.path.join(outputdir, pairs_randomfile), pairs_random,  fmt="%d %d")
     
     #web_class_data = web_classification(n_to_data[:n_d], n_to_random[:n_d] , n_d)
     #web_class_random = web_classification(n_to_data[n_d:], n_to_random[n_d:], n_d)
@@ -110,7 +107,15 @@ def main():
     )
     
     parser.add_argument(
-        "--randomfile", help="output random catalog", type=str, default=None, required=True,
+        "--randomfile", help="input random catalog", type=str, default=None, required=True,
+    )
+    
+    parser.add_argument(
+        "--inputdir", help="input directory", type=str, default=None, required=True,
+    )
+    
+    parser.add_argument(
+        "--outputdir", help="output directory", type=str, default=None, required=True,
     )
     
 #    parser.add_argument(
@@ -124,7 +129,7 @@ def main():
     
     args = parser.parse_args()
     
-    make_count(args.datafile, args.randomfile)
+    make_count(args.datafile, args.randomfile, args.inputdir, args.outputdir)
     
 if __name__ == "__main__":
     main()
