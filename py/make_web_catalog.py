@@ -50,7 +50,7 @@ def find_friends(first_id, all_ids, pair_ids, included_ids):
     
 def find_fof_groups(pairs):
     pairs = np.int_(pairs)
-    print(pairs)
+    #print(pairs)
     groups = {}
     group_id = 0
     all_ids = list(np.sort(np.unique(pairs.flatten())))
@@ -92,7 +92,7 @@ def inertia_tensor(x, y, z):
     
     values, vectors = np.linalg.eig(I)
     ii = np.argsort(-values)
-    print(values[ii])
+    #print(values[ii])
     return np.sqrt(values[ii]), vectors[:,ii]
 
 def compute_group_properties(groups, positions):
@@ -102,7 +102,7 @@ def compute_group_properties(groups, positions):
     props['SIGMA_X'] = []; props['SIGMA_Y'] = []; props['SIGMA_Z'] = []
     props['SIGMA_R'] = []
     props['LAMBDA_1'] = []; props['LAMBDA_2'] = []; props['LAMBDA_3'] = []
-    props['EIGEN_1'] = []
+    props['EIGEN_1'] = []; props['EIGEN_2'] = []; props['EIGEN_3'] = []
     
     for i in groups.keys():
         x = positions[groups[i],0]
@@ -123,14 +123,15 @@ def compute_group_properties(groups, positions):
         props['LAMBDA_1'].append(values[0])
         props['LAMBDA_2'].append(values[1])
         props['LAMBDA_3'].append(values[2])
-        
         props['EIGEN_1'].append(vectors[:,0])
+        props['EIGEN_2'].append(vectors[:,1])
+        props['EIGEN_3'].append(vectors[:,2])
 
     return props
 
 def make_catalog(posfile, pairfile, countfile, catalogfile, webtype):
     extension = pairfile[-4:]
-    webfile = pairfile.replace('_pairs'+extension, '_n_connections'+extension)
+    webfile = pairfile.replace('_pairs'+extension, '_nconnections'+extension)
     print(webfile)
     
     web_types = {"void":0, "sheet":1, "filament":2, "peak":3}
@@ -166,7 +167,7 @@ def make_catalog(posfile, pairfile, countfile, catalogfile, webtype):
     is_web_type_pair = np.isin(pairs[:,0], type_ids) & np.isin(pairs[:,1], type_ids)
     pairs = pairs[is_web_type_pair,:]
     print('Keeping {} pairs of type {}'.format(len(pairs), webtype))
-    print(pairs)
+    #print(pairs)
 
     fof_groups = find_fof_groups(pairs)
     
