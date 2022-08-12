@@ -74,6 +74,9 @@ def find_fof_groups(pairs):
     return groups
 
 def inertia_tensor(x, y, z):
+    x = x - np.mean(x)
+    y = y - np.mean(y)
+    z = z - np.mean(z)
     r = np.sqrt(x**2 + y**2 + z**2)
     I = np.ones((3,3))
     
@@ -92,7 +95,7 @@ def inertia_tensor(x, y, z):
     
     values, vectors = np.linalg.eig(I)
     ii = np.argsort(-values)
-    #print(values[ii])
+    #print(values[ii], len(x))
     return np.sqrt(values[ii]), vectors[:,ii]
 
 def compute_group_properties(groups, positions):
@@ -110,22 +113,24 @@ def compute_group_properties(groups, positions):
         z = positions[groups[i],2]
         r = np.sqrt(x**2 + y**2 + z**2)
         
-        props['N'].append(len(groups[i]))
-        props['SIGMA_R'].append(np.std(r))
-        props['MEAN_X'].append(np.mean(x))
-        props['MEAN_Y'].append(np.mean(y))
-        props['MEAN_Z'].append(np.mean(z))
-        props['SIGMA_X'].append(np.std(x))
-        props['SIGMA_Y'].append(np.std(y))
-        props['SIGMA_Z'].append(np.std(z))        
+        if len(x)>4:
+        
+            props['N'].append(len(groups[i]))
+            props['SIGMA_R'].append(np.std(r))
+            props['MEAN_X'].append(np.mean(x))
+            props['MEAN_Y'].append(np.mean(y))
+            props['MEAN_Z'].append(np.mean(z))
+            props['SIGMA_X'].append(np.std(x))
+            props['SIGMA_Y'].append(np.std(y))
+            props['SIGMA_Z'].append(np.std(z))        
 
-        values, vectors = inertia_tensor(x,y,z)
-        props['LAMBDA_1'].append(values[0])
-        props['LAMBDA_2'].append(values[1])
-        props['LAMBDA_3'].append(values[2])
-        props['EIGEN_1'].append(vectors[:,0])
-        props['EIGEN_2'].append(vectors[:,1])
-        props['EIGEN_3'].append(vectors[:,2])
+            values, vectors = inertia_tensor(x,y,z)
+            props['LAMBDA_1'].append(values[0])
+            props['LAMBDA_2'].append(values[1])
+            props['LAMBDA_3'].append(values[2])
+            props['EIGEN_1'].append(vectors[:,0])
+            props['EIGEN_2'].append(vectors[:,1])
+            props['EIGEN_3'].append(vectors[:,2])
 
     return props
 
