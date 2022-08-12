@@ -1,0 +1,2 @@
+for i in range(100):
+    print("python ../py/make_web_catalog.py --posfile ../data/TNG/TNG300-1/pos/random_{:03d}_subhalo_massive_xyz.dat --pairfile ../data/TNG/TNG300-1/web/random_{:03d}_subhalo_massive_xyz_subhalo_massive_xyz_pairs.dat --countfile ../data/TNG/TNG300-1/web/random_{:03d}_subhalo_massive_xyz_subhalo_massive_xyz_nconnections.dat --webtype void --catalogfile ../data/TNG/TNG300-1/web/void_random_{:03d}_subhalo_massive_xyz_subhalo_massive_xyz.csv".format(i, i, i, i))
