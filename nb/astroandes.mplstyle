@@ -1,0 +1,115 @@
+# reusing the style from https://homepage.univie.ac.at/peter.woitke/ProDiMo.html
+# matplotlibrc file
+font.size       : 10.0
+axes.labelsize  : 20.0  # fontsize of the x any y labels
+axes.titlesize  : 20.0
+#TICKS
+xtick.labelsize : 20.0  # fontsize of the tick labels
+ytick.labelsize : 20.0  # fontsize of the tick labels
+legend.fontsize : 20.0
+lines.linewidth   : 2.0     # line width in points
+
+#figure.figsize : 2.0, 1.25 
+
+# matplotlibrc file
+axes.labelpad       : 3.0     # space between label and axis
+
+#TICKS
+#xtick.labelsize : 9.0  # fontsize of the tick labels
+xtick.major.size     : 3      # major tick size in points
+xtick.minor.size     : 1.5      # minor tick size in points
+xtick.major.pad      : 3      # distance to major tick label in points
+xtick.minor.pad      : 3      # distance to the minor tick label in points
+xtick.direction      : in
+xtick.top            : True   # draw ticks on the top side
+xtick.bottom         : True   # draw ticks on the bottom side
+
+
+#ytick.labelsize : 9.0  # fontsize of the tick labels
+ytick.major.size     : 3      # major tick size in points
+ytick.minor.size     : 1.5      # minor tick size in points
+ytick.major.pad      : 3      # distance to major tick label in points
+ytick.minor.pad      : 3      # distance to the minor tick label in points
+ytick.direction      : in
+ytick.left           : True   # draw ticks on the left side
+ytick.right          : True  # draw ticks on the right side
+
+font.family      : serif
+#font.sans-serif : cm
+#font.serif      : Computer Modern Roman
+#
+mathtext.fontset : cm
+mathtext.default : regular
+text.usetex     : True  # use latex for all text handling
+
+
+# lines
+#lines.linewidth   : 1.5     # line width in points
+#lines.linewidth   : 1.5     # line width in points
+#lines.dashed_pattern : 2.0, 1.0
+# The three standard dash patterns.  These are scaled by the linewidth.
+lines.dashed_pattern : 2.8, 2.0
+#lines.dashdot_pattern : 4.8, 1.2, 0.8, 1.2
+#lines.dotted_pattern : 1.1, 1.1
+#lines.scale_dashes : True
+
+
+axes.linewidth  : 0.8
+axes.axisbelow  : False
+#figure.figsize : 6.5, 5.2
+#figure.figsize : 3.9, 3.12
+# three column figsize
+#figure.figsize : 2.4,1.6
+#figure.figsize : 3.39, 2.25
+#figure.figsize : 4.0, 2.5 
+figure.dpi      : 100
+
+# contours
+#contour.negative_linestyle: dashed
+#contour.positive_linestyle: dashed
+
+
+# Tight images
+savefig.bbox        : tight # 'tight' or 'standard'.
+savefig.pad_inches  : 0.025      # Padding to be used when bbox is set to 'tight'
+savefig.dpi         : 300
+savefig.transparent : False
+
+
+### Legend
+legend.fancybox      : False  # if True, use a rounded box for the
+                               # legend, else a rectangle
+#legend.isaxes        : True
+legend.numpoints     : 1      # the number of points in the legend line
+legend.borderpad     : 0.3    # border whitespace in fontsize units
+# the following dimensions are in axes coords
+legend.labelspacing  : 0.1    # the vertical space between the legend entries in fraction of fontsize
+legend.handlelength  : 1.5     # the length of the legend lines in fraction of fontsize
+legend.handletextpad : 0.3    # the space between the legend line and legend text in fraction of fontsize
+legend.borderaxespad : 0.4   # the border between the axes and legend edge in fraction of fontsize
+legend.shadow        : False
+legend.framealpha    : 1.0
+legend.edgecolor     : inherit
+
+
+
+
+
+############################################################################################
+# COLORS
+image.cmap    : viridis
+
+axes.prop_cycle    : cycler('color', ['5DA5DA', 'FAA43A', '60BD68', 'F17CB0', 'B2912F', 'B276B2', 'DECF3F', 'F15854', '4D4D4D']) 
+                    # 5DA5DA (blue)
+                    # FAA43A (orange)
+                    # 60BD68 (green)
+                    # F17CB0 (pink)
+                    # B2912F (brown)
+                    # B276B2 (purple)
+                    # DECF3F (yellow)
+                    # F15854 (red)
+                    # 4D4D4D (gray)
+                    
+                                        
+#image.cmap    : jet
+#image.cmap     : inferno
