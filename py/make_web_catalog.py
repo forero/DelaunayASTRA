@@ -5,13 +5,13 @@ import pandas as pd
 sys.setrecursionlimit(20000)
 
 
-def web_classification(n_data, n_random):
+def web_classification(n_data, n_random, void_limit=-0.9, knot_limit=0.9):
     assert len(n_data) == len(n_random)
     n_points = len(n_data)
     r_values = (n_data-n_random)/(n_data+n_random)
     web_class = np.zeros(n_points, dtype=int)
-    lower_limit = -0.90
-    upper_limit = 0.90
+    lower_limit = void_limit
+    upper_limit = knot_limit
     is_void = r_values <= lower_limit
     is_sheet = (r_values > lower_limit) & (r_values<=0.0)
     is_filament = (r_values>0.0) & (r_values <= upper_limit)
@@ -134,22 +134,25 @@ def compute_group_properties(groups, positions):
 
     return props
 
-def make_catalog(posfile, pairfile, countfile, catalogfile, webtype):
-    extension = pairfile[-4:]
-    webfile = pairfile.replace('_pairs'+extension, '_nconnections'+extension)
-    print(webfile)
-    
-    web_types = {"void":0, "sheet":1, "filament":2, "peak":3}
-    web_type_id = web_types[webtype]
+
+def make_catalog(posfile, pairfile, countfile, catalogfile, webtype, void_limit=-0.9, knot_limit=0.9):    
+
 
     pos = np.loadtxt(posfile)
     pos = pos[:,0:3]
     pairs = np.loadtxt(pairfile)
     counts = np.loadtxt(countfile)
     
-    web = web_classification(counts[:,0], counts[:,1])
+    web = web_classification(counts[:,0], counts[:,1], void_limit=void_limit, knot_limit=knot_limit)
+    print('Finished the web classification')
+    if webtype=='all':
+        np.savetxt(catalogfile, web.T, fmt='%d')
+        print('Saving results to {}'.format(catalogfile))
+        print('Finishing \n')
+        return
     
-    #web = np.loadtxt(webfile)
+    web_types = {"void":0, "sheet":1, "filament":2, "peak":3}
+    web_type_id = web_types[webtype]
     
     n_points = len(pos)
     
@@ -203,16 +206,26 @@ def main():
     )
     
     parser.add_argument(
-        "--webtype", help="webtype to build the catalog", type=str, default=None, required=True,
+        "--webtype", help="webtype to build the catalog", type=str, default='all', required=False,
     )
     
     parser.add_argument(
         "--catalogfile", help="outputfile for the web catalog", type=str, default=None, required=True,
     )
+
+    parser.add_argument(
+        "--voidlimit", help="limiting r-valur for voids", type=float, default=-0.9, required=False,
+    )
+
+    parser.add_argument(
+        "--knotlimit", help="limiting r-valur for knots", type=float, default=0.9, required=False,
+    )
     
     args = parser.parse_args()
     
-    make_catalog(args.posfile, args.pairfile, args.countfile, args.catalogfile, args.webtype)
+    make_catalog(args.posfile, args.pairfile, args.countfile, args.catalogfile, args.webtype,
+                 void_limit=args.voidlimit, knot_limit=args.knotlimit)
+
     
 if __name__ == "__main__":
     main()
