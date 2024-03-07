@@ -22,6 +22,7 @@ def web_classification(n_data, n_random, void_limit=-0.9, knot_limit=0.9):
     web_class[is_peak] = 3
     return web_class  
 
+# original work here: https://github.com/flgomezc/master_thesis/tree/master
 def find_friends(first_id, all_ids, pair_ids, included_ids):
     group = []
     #print(first_id) 
